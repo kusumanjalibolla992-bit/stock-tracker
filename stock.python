@@ -1,0 +1,173 @@
+import csv
+stock_prices = {
+    "AAPL": 180,
+    "TSLA": 250,
+    "GOOGL": 140,
+    "MSFT": 330,
+    "AMZN": 135,
+    "NFLX": 450,
+    "META": 310
+}
+portfolio = {}
+
+def add_stock():
+    stock = input("Enter Stock Symbol: ").upper()
+    if stock not in stock_prices:
+        print("Stock not available.\n")
+        return
+
+    qty = int(input("Enter Quantity: "))
+    buy_price = float(input("Enter Purchase Price per Share: "))
+
+    portfolio[stock] = {
+        "quantity": qty,
+        "buy_price": buy_price
+    }
+
+    print("Stock Added Successfully.\n")
+
+def view_portfolio():
+    if not portfolio:
+        print("Portfolio is Empty.\n")
+        return
+
+    print("\n---------------- Portfolio ----------------")
+    print("{:<10}{:<10}{:<15}{:<15}{:<15}".format(
+        "Stock", "Qty", "Buy Price", "Current Price", "Value"))
+
+    total = 0
+
+    for stock, data in portfolio.items():
+        qty = data["quantity"]
+        buy = data["buy_price"]
+        current = stock_prices[stock]
+        value = qty * current
+        total += value
+
+        print("{:<10}{:<10}{:<15}{:<15}{:<15}".format(
+            stock, qty, buy, current, value))
+
+    print("--------------------------------------------")
+    print("Total Investment Value =", total)
+    print()
+
+def profit_loss():
+    if not portfolio:
+        print("Portfolio is Empty.\n")
+        return
+
+    total_profit = 0
+
+    print("\n---------- Profit / Loss ----------")
+
+    for stock, data in portfolio.items():
+        qty = data["quantity"]
+        buy = data["buy_price"]
+        current = stock_prices[stock]
+        profit = (current - buy) * qty
+        total_profit += profit
+
+        print(f"{stock}: {profit:.2f}")
+
+    print("-----------------------------------")
+    print("Net Profit/Loss =", round(total_profit, 2))
+    print()
+
+def save_csv():
+    if not portfolio:
+        print("Nothing to Save.\n")
+        return
+
+    with open("portfolio.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+
+        writer.writerow([
+            "Stock",
+            "Quantity",
+            "Buy Price",
+            "Current Price",
+            "Current Value",
+            "Profit/Loss"
+        ])
+
+        for stock, data in portfolio.items():
+            qty = data["quantity"]
+            buy = data["buy_price"]
+            current = stock_prices[stock]
+            value = qty * current
+            profit = (current - buy) * qty
+
+            writer.writerow([
+                stock,
+                qty,
+                buy,
+                current,
+                value,
+                profit
+            ])
+
+    print("Portfolio saved as portfolio.csv\n")
+
+def search_stock():
+    stock = input("Enter Stock Symbol: ").upper()
+
+    if stock in stock_prices:
+        print("Current Price =", stock_prices[stock])
+    else:
+        print("Stock Not Found")
+
+    print()
+
+def update_stock():
+    stock = input("Enter Stock Symbol: ").upper()
+
+    if stock not in portfolio:
+        print("Stock not in Portfolio.\n")
+        return
+
+    qty = int(input("Enter New Quantity: "))
+    portfolio[stock]["quantity"] = qty
+
+    print("Quantity Updated.\n")
+
+def delete_stock():
+    stock = input("Enter Stock Symbol: ").upper()
+
+    if stock in portfolio:
+        del portfolio[stock]
+        print("Stock Removed.\n")
+    else:
+        print("Stock not Found.\n")
+
+while True:
+    print("========== STOCK TRACKER ==========")
+    print("1. Add Stock")
+    print("2. View Portfolio")
+    print("3. Profit/Loss")
+    print("4. Search Stock Price")
+    print("5. Update Quantity")
+    print("6. Delete Stock")
+    print("7. Save Portfolio to CSV")
+    print("8. Exit")
+
+    choice = input("Enter Choice: ")
+
+    if choice == "1":
+        add_stock()
+    elif choice == "2":
+        view_portfolio()
+    elif choice == "3":
+        profit_loss()
+    elif choice == "4":
+        search_stock()
+    elif choice == "5":
+        update_stock()
+    elif choice == "6":
+        delete_stock()
+    elif choice == "7":
+        save_csv()
+    elif choice == "8":
+        print("Thank You for Using Stock Tracker")
+        break
+    else:
+        print("Invalid Choice\n")
